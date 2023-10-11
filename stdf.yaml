@@ -1,0 +1,27 @@
+- serial
+- if condiction:
+    false:
+    - do false
+    true:
+    - do true
+- if condiction 2:
+    true:
+    - loop condiction:
+        - if condiction:
+            true:
+            - do true
+        - if condiction:
+            false:
+            - do false
+            true:
+            - do true
+        - output:
+            what to call:
+                input
+- serial
+- loop condiction:
+    - do loop
+- output:
+    what to call:
+        input
+- serial
