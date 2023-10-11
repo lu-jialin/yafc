@@ -5,9 +5,6 @@ import yaml as yamllib
 yafc = sys.stdin.read()
 yafc = yamllib.safe_load(yafc)
 
-All = {}
-Alll = []
-
 def typeof(seq , maybe:str='trivial') :
 	if None : pass
 	elif not isinstance(seq,dict) and not isinstance(seq,list) :
@@ -52,7 +49,7 @@ def complete(yafc:list) :
 				complete(seq[cond][False])
 	return yafc
 
-def uniform(yafc:list , struct:list=[] , ref:dict={} , back=None) :
+def uniform(yafc:list , struct:list=[] , ref:dict={}) :
 	if yafc is None : return [],{}
 	for seq in yafc :
 		t = typeof(seq)
@@ -72,26 +69,27 @@ def uniform(yafc:list , struct:list=[] , ref:dict={} , back=None) :
 			cond,branch = seq.popitem()
 			struct.append(id(cond))
 			ref[id(cond)] = {'label' : str(cond)}
-			s,r = uniform(branch[True] , back=back)
+			s,r = uniform(branch[True])
 			struct.append(s)
 			ref.update(r)
-			ref[id(cond)]['y'] = s[0] if len(s) > 0 else None
-			s,r = uniform(branch[False] , back=back)
+			ref[id(cond)][True] = s[0] if len(s) > 0 else None
+			s,r = uniform(branch[False])
 			struct.append(s)
 			ref.update(r)
-			ref[id(cond)]['n'] = s[0] if len(s) > 0 else None
+			ref[id(cond)][False] = s[0] if len(s) > 0 else None
 		elif t == 'loop' :
 			cond,loop = seq.popitem()
 			struct.append(id(cond))
 			ref[id(cond)] = {'label' : str(cond)}
-			s,r = uniform(loop , back=id(cond))
+			s,r = uniform(loop)
 			struct.append(s)
 			ref.update(r)
-			ref[id(cond)]['y'] = s[0] if len(s) > 0 else None
-			#TODO : make the last internal node back to loop condition
+			ref[id(cond)][True] = s[0] if len(s) > 0 else None
+			struct.append([])
+			ref[id(cond)]['b'] = True
 	return struct,ref
 
 yafc = complete(yafc)
 yafc,ref = uniform(yafc)
 
-print(yamllib.dump(yafc))
+print(yamllib.dump(ref))
