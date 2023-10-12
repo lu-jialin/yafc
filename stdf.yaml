@@ -1,27 +1,31 @@
 - serial
-- if condiction:
+- if condiction a:
     false:
     - do false
     true:
     - do true
-- if condiction 2:
+- if condiction include loop b:
     true:
-    - loop condiction:
-        - if condiction:
+    - loop condiction c:
+        - other loop
+        - if condiction d:
             true:
-            - do true
-        - if condiction:
+            - if condiction e:
+                true:
+                - do true
+        - if condiction f:
             false:
             - do false
             true:
             - do true
         - output:
-            what to call:
+            what to call g:
                 input
+    - do do true
 - serial
-- loop condiction:
+- loop condiction h:
     - do loop
 - output:
-    what to call:
+    what to call i:
         input
 - serial
