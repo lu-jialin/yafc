@@ -5,7 +5,7 @@ size<-function(y,size)
 	sapply(y,function(y){
 		size<-function(y,size)
 		{
-			if(!is.list(y)) 1
+			if(!is.list(y)) length(y)
 			else if(is.null(names(y)))
 				sapply(y,function(y){size(y,size)})
 			else

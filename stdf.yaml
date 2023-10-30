@@ -1,31 +1,28 @@
-- a:
-    - b
-    - c
-#- a
-#- b
-#- c:
-#    true:
-#    - c1a
-#    - c1b
-#    - c1c:
-#        false:
-#        - c1c0a
-#        - c1c0b
-#- d:
-#    true:
-#    - d1a
-#    false:
-#    - d0a
-#    - d0b:
-#        - d0ba
-#        - d0bb
-#        - d0bc:
-#            true:
-#                -d0bc1a
-#- e:{f:g:{}}
-#- h:
-#    - ha
-#    - hb:
-#        true:
-#        - hb1
-#        - hb1
+- a
+- b
+- c:
+    true:
+    - c1a
+    - c1b
+    - c1c:
+        false:
+        - c1c0a
+        - c1c0b
+- d:
+    true:
+    - d1a
+    false:
+    - d0a
+    - d0b:
+        - d0ba
+        - d0bb
+        - d0bc:
+            true:
+                - d0bc1a
+- e: {f: {g: {}}}
+- h:
+    - ha
+    - hb:
+        true:
+        - hb1
+        - hb1
