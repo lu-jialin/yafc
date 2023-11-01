@@ -19,9 +19,9 @@
         - d0bc:
             true:
                 - d0bc1a:
+                    - d0bc1a1c: {d0bc1a1d: d0bc1a1e}
                     - d0bc1a1a
                     - d0bc1a1b
-                    - d0bc1a1c: {d0bc1a1d: d0bc1a1e}
 - e: {f: g}
 - h:
     - ha

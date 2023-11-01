@@ -20,6 +20,7 @@ stdf = yamllib.safe_load(sys.stdin.read())
 _pyprint = print
 #def print(*__p , end='' if not args.d else '\n') : _pyprint(*__p,end=end)
 def print(*__p , end='\n' if not args.d else '\n') : _pyprint(*__p,end=end)
+def R(*__p , end=';' if not args.d else '\n') : _pyprint(*__p,end=end)
 
 
 def isio(stdf) -> bool :
@@ -58,7 +59,7 @@ def stripbool(stdf) :
 		if isinstance(v,list) : #loop
 			for i,s in enumerate(v) :
 				v[i] = stripbool(s)
-			stdf[k] = v
+			stdf[k] = (v,)
 			return stdf
 		elif set(v) | {True,False} == {True,False} :
 			stdf[k] = [None,None]
@@ -87,50 +88,78 @@ def numbering(stdf) :
 	elif isinstance(stdf,dict) and len(stdf)==1 :
 		cond,stdf = stdf.popitem()
 		diag.append(cond)
-		return {len(diag)-1 : numbering(stdf)}
-		#if len(stdf)==1 :
-		#	cond,stdf = stdf.popitem()
-		#	if None : pass
-		#	elif isinstance(stdf,tuple) and len(stdf)==1 : #loop
-		#		print('loop')
-		#		numbering(stdf:=stdf[0])
-		#	elif isinstance(stdf,list) and len(stdf)==2 : #branch
-		#		print('branch')
-		#		numbering(stdf)
-		#	else :
-		#		raise Exception('Format',f'Undefined format : {stdf}')
+		if None : pass
+		elif isinstance(stdf,tuple) and len(stdf)==1 :
+			return {len(diag)-1 : (numbering(stdf:=stdf[0]),)}
+		elif isinstance(stdf,list) and len(stdf)==2 :
+			return {len(diag)-1 : numbering(stdf)}
+		else :
+			raise Exception('Format',f'Undefined format : {stdf}')
 	else :
 		raise Exception('Format',f'Undefined format : {stdf}')
 
 stdf = flatio(stdf)
 stdf = stripbool(stdf)
 stdf = numbering(stdf)
-print(stdf)
 
-#def _diag(stdf , key=None , pre=[], insign={} , diag=[] , io={}) :
-#	if not isinstance(stdf,list) and not isinstance(stdf,dict) :
-#		insign[id(stdf)] = str(stdf)
-#		diag.append(id(stdf))
-#	elif isinstance(stdf,list) :
-#		list(map(lambda k:_diag(k,key=None,pre=pre,insign=insign,diag=diag,io=io) , stdf))
-#	elif isinstance(stdf,dict) :
-#		if ico := isio(stdf) :
-#			insign[id(stdf)] = str(ico[1])
-#			diag.append(id(stdf))
-#			io[id(stdf)] = (ico[0],ico[2])
-#		else :
-#			def skipbool(k) :
-#				if k not in {True,False} :
-#					insign[id(stdf[k])] = str(k)
-#					diag.append(id(stdf[k]))
-#					#Note that string will use the same id
-#				_diag(stdf[k],pre=pre,key=k,insign=insign,diag=diag,io=io)
-#			list(map(skipbool , stdf))
-#	return insign,diag,io
-#insign,diag,IO = _diag(stdf)
-#print(f'''insign<-list()''')
-#print(f'''io<-list()''')
-#for ID in insign : print(f"""insign[['{ID}']]<-'{insign[ID]}'""")
-##FIXME : String in step can not contain "'"
-#print(f'''pdg<-diag(c({','.join(map(str,diag))}))''')
-#for io in IO : print(f'''io[['{str(io)}']]<-c('{str(IO[io][0])}','{str(IO[io][1])}')''')
+R('insign=c()')
+R('pdginput=c()')
+R('pdgoutput=c()')
+R(f'pdg=diag({len(diag[1:])})')
+for i,d in enumerate(diag[1:]) :
+	if not isinstance(d,tuple) :
+		R(f'''insign[{i+1}]="{d}"''')
+	else :
+		R(f'''pdginput[{i+1}]="{d[0]}"''')
+		R(f'''insign[{i+1}]="{d[1]}"''')
+		R(f'''pdgoutput[{i+1}]="{d[2]}"''')
+	#FIXME : string in `diag` cannot contain `"`
+
+def jmp(stdf , branch=[] , delay=[]) :
+	if stdf is None :
+		#print('delay')
+		return [branch.pop()]
+	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
+		#print('atom')
+		if branch :
+			cond,b = branch.pop()
+			R(f'pdg[{stdf},{cond}]={1 if b else -1}')
+			#print(f'{diag[stdf]} <- {diag[cond]} : {b}')
+		if delay :
+			while(delay) :
+				cond,b = delay.pop()
+				R(f'pdg[{stdf},{cond}]={1 if b else -1}')
+				#print(f'{diag[stdf]} <- {diag[cond]} : {b}')
+		return delay
+	elif isinstance(stdf,list) :
+		for i,s in enumerate(stdf) :
+			delay = jmp(stdf[i] , branch=branch , delay=delay)
+		return delay
+	elif isinstance(stdf,dict) and len(stdf)==1 :
+		cond,stdf = stdf.popitem()
+		if delay :
+			while(delay) :
+				d,b = delay.pop()
+				R(f'pdg[{cond},{d}]={1 if b else -1}')
+				#print(f'{diag[cond]} <- {diag[d]} : {b}')
+		if None : pass
+		elif isinstance(stdf,tuple) and len(stdf)==1 :
+			#print('loop')
+			jmp(stdf:=stdf[0] , branch=branch+[(cond,True)] , delay=delay)
+			return [(cond,False)]
+		elif isinstance(stdf,list) and len(stdf)==2 :
+			#To distinguish branch and sequence, don't invoke stdf directly
+			#print('branch')
+			delayif = []
+			for i,s in enumerate(stdf) :
+				delayif += jmp(stdf[i] , branch=branch+[(cond,bool(i))] , delay=delay)
+			return delayif
+		else :
+			raise Exception('Format',f'Undefined format : {stdf}')
+	else :
+		raise Exception('Format',f'Undefined format : {stdf}')
+jmp(stdf)
+
+#print(stdf)
+#print()
+#print(list(enumerate(diag)))
