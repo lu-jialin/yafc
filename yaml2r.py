@@ -21,8 +21,10 @@ _pyprint = print
 #def print(*__p , end='' if not args.d else '\n') : _pyprint(*__p,end=end)
 def print(*__p , end='\n' if not args.d else '\n') : _pyprint(*__p,end=end)
 if not args.d :
+	def Rdebug(*__p) : pass
 	def R(*__p , end=';') : _pyprint(*__p,end=end)
 else :
+	def Rdebug(*__p , end='\n') : _pyprint(*__p,end=end)
 	def R(*__p) : pass
 
 
@@ -119,7 +121,7 @@ for i,d in enumerate(diag[1:]) :
 		R(f'''pdgoutput[{i+1}]="{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
-def assignjmp(stdf , branch=[] , delay=[]) :
+def assignjmp(stdf , branch=[] , delay=[] , loop=[] , toloop=False) :
 #`R` <- pdg[] index order will change row-major or column-major
 #XXX column-major Now :
 	#None zero value in column means the destination
@@ -137,14 +139,16 @@ def assignjmp(stdf , branch=[] , delay=[]) :
 			while(delay) :
 				c,b = delay.pop()
 				R(f'pdg[{stdf},{c}]={1 if b else -1}')
-				#print(f'{diag[stdf]} <- {diag[c]} : {b}')
+				Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		return delay
 	elif isinstance(stdf,list) :
 		for i,s in enumerate(stdf) :
 			delay = assignjmp(
 				stdf[i] ,
 				branch=branch ,
-				delay=delay
+				delay=delay ,
+				loop=loop ,
+				toloop=toloop ,
 			)
 		return delay
 	elif isinstance(stdf,dict) and len(stdf)==1 :
@@ -152,19 +156,21 @@ def assignjmp(stdf , branch=[] , delay=[]) :
 		if branch :
 			c,b = branch.pop()
 			R(f'pdg[{cond},{c}]={1 if b else -1}')
-			#print(f'{diag[cond]} <- {diag[c]} : {b}')
+			Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
 				R(f'pdg[{cond},{c}]={1 if b else -1}')
-				#print(f'{diag[cond]} <- {diag[c]} : {b}')
+				Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
 			#print('loop')
 			delayif = assignjmp(
 				stdf:=stdf[0] ,
 				branch=branch+[(cond,True)] ,
-				delay=delay
+				delay=delay ,
+				loop=loop+[cond] ,
+				toloop=toloop ,
 			)
 			return [(cond,False)] + delayif
 		elif isinstance(stdf,list) and len(stdf)==2 :
@@ -175,7 +181,9 @@ def assignjmp(stdf , branch=[] , delay=[]) :
 				delayif += assignjmp(
 					stdf[i] ,
 					branch=branch+[(cond,bool(i))] ,
-					delay=delay
+					delay=delay ,
+					loop=loop ,
+					toloop=toloop ,
 				)
 			return delayif
 		else :
@@ -187,37 +195,4 @@ if delay :
 	while(delay) :
 		c,b = delay.pop()
 		R(f'pdg[{len(diag)},{c}]={1 if b else -1}')
-		#print(f'{diag[stdf]} <- {diag[c]} : {b}')
-
-#TODO :
-def assignloop(stdf , loop=None , index=-1 , length=0) :
-	if stdf is None :
-		pass
-		#TODO : Move delay to the loop
-	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
-		#print('atom')
-		if loop is not None and (index==length-1) :
-			pass
-			#print(f'{diag[loop]} <- {diag[stdf]}')
-	elif isinstance(stdf,list) :
-		for i,s in enumerate(stdf) :
-			assignloop(stdf[i] , loop=loop , index=i , length=len(stdf))
-	elif isinstance(stdf,dict) and len(stdf)==1 :
-		cond,stdf = stdf.copy().popitem()
-		if loop is not None and (index==length-1) :
-			#print(f'{diag[loop]} <- {diag[cond]}')
-			loop = None
-		if None : pass
-		elif isinstance(stdf,tuple) and len(stdf)==1 :
-			#print('loop')
-			assignloop(stdf:=stdf[0] , loop=cond , index=index , length=length)
-		elif isinstance(stdf,list) and len(stdf)==2 :
-			#To distinguish branch and sequence, don't invoke stdf directly
-			#print('branch')
-			for i,s in enumerate(stdf) :
-				assignloop(stdf[i] , loop=loop , index=index , length=length)
-		else :
-			raise Exception('Format',f'Undefined format : {stdf}')
-	else :
-		raise Exception('Format',f'Undefined format : {stdf}')
-assignloop(stdf)
+		Rdebug(f' <- {diag[c]} : {b}')
