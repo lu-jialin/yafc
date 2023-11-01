@@ -134,7 +134,7 @@ def assignjmp(stdf , branch=[] , delay=[] , loop=[] , toloop=False) :
 		if branch :
 			c,b = branch.pop()
 			R(f'pdg[{stdf},{c}]={1 if b else -1}')
-			#print(f'{diag[stdf]} <- {diag[c]} : {b}')
+			Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
