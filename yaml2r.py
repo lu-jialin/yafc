@@ -46,38 +46,66 @@ def flatio(stdf) :
 		return stdf
 #Now all dict is branch or loop
 
-def popbranch(stdf) :
+def stripbool(stdf) :
 	if not isinstance(stdf,list) and not isinstance(stdf,dict) :
 		return stdf
 	elif isinstance(stdf,list) :
 		for i,s in enumerate(stdf) :
-			stdf[i] = popbranch(s)
+			stdf[i] = stripbool(s)
 		return stdf
 	elif isinstance(stdf,dict) :
 		k,v = stdf.popitem()
 		if isinstance(v,list) : #loop
 			for i,s in enumerate(v) :
-				v[i] = popbranch(s)
-			stdf[k] = (v,)
+				v[i] = stripbool(s)
+			stdf[k] = v
 			return stdf
 		elif set(v) | {True,False} == {True,False} :
 			stdf[k] = [None,None]
 			for b in {True,False} :
 				if b in set(v) :
-					stdf[k][int(b)] = popbranch(v[b])
+					stdf[k][int(b)] = stripbool(v[b])
 				else :
 					stdf[k][int(b)] = None
 			return stdf
 		else :
 			raise Exception('Format',f'Undefined format : {stdf}')
+#cond:len(list)==1 : loop
+#cond:len(list)==2 : branch / 0:False , 1:True
+#len(tuple)==3 : io / (input , procedure , output)
+
+diag   = [None]
+def numbering(stdf) :
+	if stdf is None : return None
+	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
+		#print('atom')
+		diag.append(stdf)
+		return len(diag)-1
+	elif isinstance(stdf,list) :
+		#for i,s in enumerate(stdf) : numbering(stdf[i])
+		return [numbering(s) for s in stdf]
+	elif isinstance(stdf,dict) and len(stdf)==1 :
+		cond,stdf = stdf.popitem()
+		diag.append(cond)
+		return {len(diag)-1 : numbering(stdf)}
+		#if len(stdf)==1 :
+		#	cond,stdf = stdf.popitem()
+		#	if None : pass
+		#	elif isinstance(stdf,tuple) and len(stdf)==1 : #loop
+		#		print('loop')
+		#		numbering(stdf:=stdf[0])
+		#	elif isinstance(stdf,list) and len(stdf)==2 : #branch
+		#		print('branch')
+		#		numbering(stdf)
+		#	else :
+		#		raise Exception('Format',f'Undefined format : {stdf}')
+	else :
+		raise Exception('Format',f'Undefined format : {stdf}')
 
 stdf = flatio(stdf)
-stdf = popbranch(stdf)
-stdf = ['__start'] + stdf + ['__end']
-#stdf = [id(None)] + stdf + [id(None)]
-
-#print(stdf)
-print(jsonlib.dumps(stdf))
+stdf = stripbool(stdf)
+stdf = numbering(stdf)
+print(stdf)
 
 #def _diag(stdf , key=None , pre=[], insign={} , diag=[] , io={}) :
 #	if not isinstance(stdf,list) and not isinstance(stdf,dict) :
