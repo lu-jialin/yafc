@@ -1,5 +1,5 @@
 #!/bin/env python3
-import sys,argparse
+import sys,argparse,textwrap
 from functools import reduce
 import yaml as yamllib
 #XXX :
@@ -128,7 +128,7 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 	#None zero value in row means the source
 	if stdf is None :
 		#print('delay')
-		return [branch.pop()]
+		return [branch.pop()],stdf
 	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
 		#print('atom')
 		if branch :
@@ -140,16 +140,16 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 				c,b = delay.pop()
 				R(f'pdg[{stdf},{c}]={1 if b else -1}')
 				Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
-		return delay
+		return delay,stdf
 	elif isinstance(stdf,list) :
 		for i,s in enumerate(stdf) :
-			delay = assignjmp(
+			delay,toloop = assignjmp(
 				stdf[i] ,
 				branch=branch ,
 				delay=delay ,
 				last=last ,
 			)
-		return delay
+		return delay,toloop
 	elif isinstance(stdf,dict) and len(stdf)==1 :
 		cond,stdf = stdf.copy().popitem()
 		if branch :
@@ -164,7 +164,7 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
 			#print('loop')
-			delayif = assignjmp(
+			delayif,toloop = assignjmp(
 				stdf:=stdf[0] ,
 				branch=branch+[(cond,True)] ,
 				delay=delay ,
@@ -175,24 +175,32 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 					c,b = delayif.pop()
 					R(f'pdg[{cond},{c}]={1 if b else -1}')
 					Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
-			return [(cond,False)] + delayif
+			if toloop is not None :
+				R(f'pdg[{cond},{toloop}]=1')
+				Rdebug(f'{diag[cond]} <- {diag[toloop]}')
+			return ([(cond,False)]+delayif),None
+			#Only atom node can go back to loop
+			#Branch/Loop go back to loop is similar to `goto or empty block or `do-while
+			#Structure above is not supported
+			#Loop must be back from only 1 Atom or multiple implict branch(with nested).
 		elif isinstance(stdf,list) and len(stdf)==2 :
 			#To distinguish branch and sequence, don't invoke stdf directly
 			#print('branch')
 			delayif = []
 			for i,s in enumerate(stdf) :
-				delayif += assignjmp(
+				delaybool,toloop = assignjmp(
 					stdf[i] ,
 					branch=branch+[(cond,bool(i))] ,
 					delay=delay ,
 					last=last ,
 				)
-			return delayif
+				delayif += delaybool
+			return delayif,toloop
 		else :
 			raise Exception('Format',f'Undefined format : {stdf}')
 	else :
 		raise Exception('Format',f'Undefined format : {stdf}')
-delay = assignjmp(stdf)
+delay,_ = assignjmp(stdf)
 if delay :
 	while(delay) :
 		c,b = delay.pop()
