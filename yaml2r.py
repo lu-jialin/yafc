@@ -107,18 +107,18 @@ stdf = flatio(stdf)
 stdf = stripbool(stdf)
 stdf = numbering(stdf)
 
-R('insign=c()')
-R('pdginput=c()')
-R('pdgoutput=c()')
-#R(f'pdg=diag({len(diag)})') #include end
-R(f'pdg=matrix(0,{len(diag)},{len(diag)})') #include end
+R('insign<-c()')
+R('pdginput<-c()')
+R('pdgoutput<-c()')
+#R(f'pdg<-diag({len(diag)})') #include end
+R(f'pdg<-matrix(0,{len(diag)},{len(diag)})') #include end
 for i,d in enumerate(diag[1:]) :
 	if not isinstance(d,tuple) :
-		R(f'''insign[{i+1}]="{d}"''')
+		R(f'''insign[{i+1}]<-"{d}"''')
 	else :
-		R(f'''pdginput[{i+1}]="{d[0]}"''')
-		R(f'''insign[{i+1}]="{d[1]}"''')
-		R(f'''pdgoutput[{i+1}]="{d[2]}"''')
+		R(f'''pdginput[{i+1}]<-"{d[0]}"''')
+		R(f'''insign[{i+1}]<-"{d[1]}"''')
+		R(f'''pdgoutput[{i+1}]<-"{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
 def assignjmp(stdf , branch=[] , delay=[] , last=False) :
@@ -133,12 +133,12 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		#print('atom')
 		if branch :
 			c,b = branch.pop()
-			R(f'pdg[{stdf},{c}]={1 if b else -1}')
+			R(f'pdg[{stdf},{c}]<-{1 if b else -1}')
 			Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				R(f'pdg[{stdf},{c}]={1 if b else -1}')
+				R(f'pdg[{stdf},{c}]<-{1 if b else -1}')
 				Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		return delay,stdf
 	elif isinstance(stdf,list) :
@@ -154,12 +154,12 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		cond,stdf = stdf.copy().popitem()
 		if branch :
 			c,b = branch.pop()
-			R(f'pdg[{cond},{c}]={1 if b else -1}')
+			R(f'pdg[{cond},{c}]<-{1 if b else -1}')
 			Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				R(f'pdg[{cond},{c}]={1 if b else -1}')
+				R(f'pdg[{cond},{c}]<-{1 if b else -1}')
 				Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
@@ -173,10 +173,10 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 			if delayif :
 				while(delayif) :
 					c,b = delayif.pop()
-					R(f'pdg[{cond},{c}]={1 if b else -1}')
+					R(f'pdg[{cond},{c}]<-{1 if b else -1}')
 					Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 			if toloop is not None :
-				R(f'pdg[{cond},{toloop}]=1')
+				R(f'pdg[{cond},{toloop}]<-1')
 				Rdebug(f'{diag[cond]} <- {diag[toloop]}')
 			return ([(cond,False)]+delayif),None
 			#Only atom node can go back to loop
@@ -204,5 +204,5 @@ delay,_ = assignjmp(stdf)
 if delay :
 	while(delay) :
 		c,b = delay.pop()
-		R(f'pdg[{len(diag)},{c}]={1 if b else -1}')
+		R(f'pdg[{len(diag)},{c}]<-{1 if b else -1}')
 		Rdebug(f' <- {diag[c]} : {b}')
