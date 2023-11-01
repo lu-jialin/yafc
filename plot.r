@@ -1,0 +1,6 @@
+library('plot.matrix')
+pdf('pdg.pdf')
+source('pdg.r')
+par(mar=(diag(diag(4)*4)))
+plot(pdg,col=c('coral3','white','chartreuse4'))
+dev.off()
