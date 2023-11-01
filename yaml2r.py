@@ -20,6 +20,7 @@ stdf = yamllib.safe_load(sys.stdin.read())
 _pyprint = print
 #def print(*__p , end='' if not args.d else '\n') : _pyprint(*__p,end=end)
 def print(*__p , end='\n' if not args.d else '\n') : _pyprint(*__p,end=end)
+#def R(*__p) : pass
 def R(*__p , end=';' if not args.d else '\n') : _pyprint(*__p,end=end)
 
 
@@ -75,7 +76,7 @@ def stripbool(stdf) :
 #cond:len(list)==2 : branch / 0:False , 1:True
 #len(tuple)==3 : io / (input , procedure , output)
 
-diag   = [None]
+diag = [None]
 def numbering(stdf) :
 	if stdf is None : return None
 	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
@@ -105,7 +106,8 @@ stdf = numbering(stdf)
 R('insign=c()')
 R('pdginput=c()')
 R('pdgoutput=c()')
-R(f'pdg=diag({len(diag[1:])})')
+#R(f'pdg=diag({len(diag)})') #include end
+R(f'pdg=matrix(0,{len(diag)},{len(diag)})') #include end
 for i,d in enumerate(diag[1:]) :
 	if not isinstance(d,tuple) :
 		R(f'''insign[{i+1}]="{d}"''')
@@ -115,51 +117,90 @@ for i,d in enumerate(diag[1:]) :
 		R(f'''pdgoutput[{i+1}]="{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
-def jmp(stdf , branch=[] , delay=[]) :
+def assignbranch(stdf , branch=[] , delay=[]) :
+#`R` <- pdg[] index order will change row-major or column-major
+#XXX column-major Now :
+	#None zero value in column means the destination
+	#None zero value in row means the source
 	if stdf is None :
 		#print('delay')
 		return [branch.pop()]
 	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
 		#print('atom')
 		if branch :
-			cond,b = branch.pop()
-			R(f'pdg[{stdf},{cond}]={1 if b else -1}')
-			#print(f'{diag[stdf]} <- {diag[cond]} : {b}')
+			c,b = branch.pop()
+			R(f'pdg[{stdf},{c}]={1 if b else -1}')
+			#print(f'{diag[stdf]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
-				cond,b = delay.pop()
-				R(f'pdg[{stdf},{cond}]={1 if b else -1}')
-				#print(f'{diag[stdf]} <- {diag[cond]} : {b}')
+				c,b = delay.pop()
+				R(f'pdg[{stdf},{c}]={1 if b else -1}')
+				#print(f'{diag[stdf]} <- {diag[c]} : {b}')
 		return delay
 	elif isinstance(stdf,list) :
 		for i,s in enumerate(stdf) :
-			delay = jmp(stdf[i] , branch=branch , delay=delay)
+			delay = assignbranch(stdf[i] , branch=branch , delay=delay)
 		return delay
 	elif isinstance(stdf,dict) and len(stdf)==1 :
-		cond,stdf = stdf.popitem()
+		cond,stdf = stdf.copy().popitem()
+		if branch :
+			c,b = branch.pop()
+			R(f'pdg[{cond},{c}]={1 if b else -1}')
+			#print(f'{diag[cond]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
-				d,b = delay.pop()
-				R(f'pdg[{cond},{d}]={1 if b else -1}')
-				#print(f'{diag[cond]} <- {diag[d]} : {b}')
+				c,b = delay.pop()
+				R(f'pdg[{cond},{c}]={1 if b else -1}')
+				#print(f'{diag[cond]} <- {diag[c]} : {b}')
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
 			#print('loop')
-			jmp(stdf:=stdf[0] , branch=branch+[(cond,True)] , delay=delay)
-			return [(cond,False)]
+			delayif = assignbranch(stdf:=stdf[0] , branch=branch+[(cond,True)] , delay=delay)
+			return [(cond,False)] + delayif
 		elif isinstance(stdf,list) and len(stdf)==2 :
 			#To distinguish branch and sequence, don't invoke stdf directly
 			#print('branch')
 			delayif = []
 			for i,s in enumerate(stdf) :
-				delayif += jmp(stdf[i] , branch=branch+[(cond,bool(i))] , delay=delay)
+				delayif += assignbranch(stdf[i] , branch=branch+[(cond,bool(i))] , delay=delay)
 			return delayif
 		else :
 			raise Exception('Format',f'Undefined format : {stdf}')
 	else :
 		raise Exception('Format',f'Undefined format : {stdf}')
-jmp(stdf)
-
+delay = assignbranch(stdf)
+if delay :
+	while(delay) :
+		c,b = delay.pop()
+		R(f'pdg[ncol(pdg),{c}]={1 if b else -1}')
+		#print(f'{diag[stdf]} <- {diag[c]} : {b}')
+#print(delayif)
 #print(stdf)
 #print()
 #print(list(enumerate(diag)))
+
+#def assignloop(stdf) :
+#	if stdf is None :
+#		pass
+#	elif not isinstance(stdf,list) and not isinstance(stdf,dict) :
+#		#print('atom')
+#		pass
+#	elif isinstance(stdf,list) :
+#		for i,s in enumerate(stdf) :
+#			assignloop(stdf[i])
+#	elif isinstance(stdf,dict) and len(stdf)==1 :
+#		cond,stdf = stdf.copy().popitem()
+#		if None : pass
+#		elif isinstance(stdf,tuple) and len(stdf)==1 :
+#			#print('loop')
+#			assignloop(stdf:=stdf[0])
+#		elif isinstance(stdf,list) and len(stdf)==2 :
+#			#To distinguish branch and sequence, don't invoke stdf directly
+#			#print('branch')
+#			for i,s in enumerate(stdf) :
+#				assignloop(stdf[i])
+#		else :
+#			raise Exception('Format',f'Undefined format : {stdf}')
+#	else :
+#		raise Exception('Format',f'Undefined format : {stdf}')
+#assignloop(stdf)
