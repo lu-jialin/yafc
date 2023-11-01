@@ -119,8 +119,7 @@ for i,d in enumerate(diag[1:]) :
 		R(f'''pdgoutput[{i+1}]="{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
-mayloop = {}
-def assignbranch(stdf , branch=[] , delay=[]) :
+def assignjmp(stdf , branch=[] , delay=[]) :
 #`R` <- pdg[] index order will change row-major or column-major
 #XXX column-major Now :
 	#None zero value in column means the destination
@@ -137,14 +136,16 @@ def assignbranch(stdf , branch=[] , delay=[]) :
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				mayloop.setdefault(c , None)
-				mayloop[c] = stdf
 				R(f'pdg[{stdf},{c}]={1 if b else -1}')
 				#print(f'{diag[stdf]} <- {diag[c]} : {b}')
 		return delay
 	elif isinstance(stdf,list) :
 		for i,s in enumerate(stdf) :
-			delay = assignbranch(stdf[i] , branch=branch , delay=delay)
+			delay = assignjmp(
+				stdf[i] ,
+				branch=branch ,
+				delay=delay
+			)
 		return delay
 	elif isinstance(stdf,dict) and len(stdf)==1 :
 		cond,stdf = stdf.copy().popitem()
@@ -155,32 +156,36 @@ def assignbranch(stdf , branch=[] , delay=[]) :
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				mayloop.setdefault(c , None)
-				mayloop[c] = cond
 				R(f'pdg[{cond},{c}]={1 if b else -1}')
 				#print(f'{diag[cond]} <- {diag[c]} : {b}')
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
 			#print('loop')
-			delayif = assignbranch(stdf:=stdf[0] , branch=branch+[(cond,True)] , delay=delay)
+			delayif = assignjmp(
+				stdf:=stdf[0] ,
+				branch=branch+[(cond,True)] ,
+				delay=delay
+			)
 			return [(cond,False)] + delayif
 		elif isinstance(stdf,list) and len(stdf)==2 :
 			#To distinguish branch and sequence, don't invoke stdf directly
 			#print('branch')
 			delayif = []
 			for i,s in enumerate(stdf) :
-				delayif += assignbranch(stdf[i] , branch=branch+[(cond,bool(i))] , delay=delay)
+				delayif += assignjmp(
+					stdf[i] ,
+					branch=branch+[(cond,bool(i))] ,
+					delay=delay
+				)
 			return delayif
 		else :
 			raise Exception('Format',f'Undefined format : {stdf}')
 	else :
 		raise Exception('Format',f'Undefined format : {stdf}')
-delay = assignbranch(stdf)
+delay = assignjmp(stdf)
 if delay :
 	while(delay) :
 		c,b = delay.pop()
-		mayloop.setdefault(c , None)
-		mayloop[c] = len(diag)
 		R(f'pdg[{len(diag)},{c}]={1 if b else -1}')
 		#print(f'{diag[stdf]} <- {diag[c]} : {b}')
 
