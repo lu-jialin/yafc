@@ -121,7 +121,7 @@ for i,d in enumerate(diag[1:]) :
 		R(f'''pdgoutput[{i+1}]="{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
-def assignjmp(stdf , branch=[] , delay=[] , loop=[] , toloop=False) :
+def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 #`R` <- pdg[] index order will change row-major or column-major
 #XXX column-major Now :
 	#None zero value in column means the destination
@@ -147,8 +147,7 @@ def assignjmp(stdf , branch=[] , delay=[] , loop=[] , toloop=False) :
 				stdf[i] ,
 				branch=branch ,
 				delay=delay ,
-				loop=loop ,
-				toloop=toloop ,
+				last=last ,
 			)
 		return delay
 	elif isinstance(stdf,dict) and len(stdf)==1 :
@@ -169,9 +168,13 @@ def assignjmp(stdf , branch=[] , delay=[] , loop=[] , toloop=False) :
 				stdf:=stdf[0] ,
 				branch=branch+[(cond,True)] ,
 				delay=delay ,
-				loop=loop+[cond] ,
-				toloop=toloop ,
+				last=last ,
 			)
+			if delayif :
+				while(delayif) :
+					c,b = delayif.pop()
+					R(f'pdg[{cond},{c}]={1 if b else -1}')
+					Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 			return [(cond,False)] + delayif
 		elif isinstance(stdf,list) and len(stdf)==2 :
 			#To distinguish branch and sequence, don't invoke stdf directly
@@ -182,8 +185,7 @@ def assignjmp(stdf , branch=[] , delay=[] , loop=[] , toloop=False) :
 					stdf[i] ,
 					branch=branch+[(cond,bool(i))] ,
 					delay=delay ,
-					loop=loop ,
-					toloop=toloop ,
+					last=last ,
 				)
 			return delayif
 		else :
