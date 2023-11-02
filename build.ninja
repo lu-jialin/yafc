@@ -1,0 +1,14 @@
+rule mkdir
+    command = mkdir -p $out
+
+rule yaml2r.py
+    command = ./yaml2r.py < $in > $out
+rule r2dot.r
+    command = ./r2dot.r $in > $out
+rule dot
+    command = dot -Tsvg < $in > $out
+
+build o : mkdir
+build o/pdg.r : yaml2r.py stdf.yaml | o
+build o/pdg.dot : r2dot.r o/pdg.r | o
+build o/pdg.svg : dot o/pdg.dot | o

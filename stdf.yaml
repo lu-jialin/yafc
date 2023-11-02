@@ -1,31 +1,31 @@
 - a
 - b
-- c:
+- c ?:
     true:
     - c1a
     - c1b
-    - c1c:
+    - c1c ?:
         false:
         - c1c0a
         - c1c0b
-- d:
+- d ?:
     true:
     - d1a
     false:
     - d0a
-    - d0b:
+    - d0b ?:
         - d0ba
         - d0bb
-        - d0bc:
+        - d0bc ?:
             true:
-                - d0bc1a:
+                - d0bc1a ?:
                     - d0bc1a1c: {d0bc1a1d: d0bc1a1e}
                     - d0bc1a1a
                     - d0bc1a1b
 - e: {f: g}
-- h:
+- h ?:
     - ha
-    - hb:
+    - hb ?:
         true:
         - hb1a
         - hb1b
