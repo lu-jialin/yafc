@@ -209,6 +209,6 @@ if delay :
 		c,b = delay.pop()
 		R(f'{Rmatrixname}[{len(diag)},{c}]<-{1 if b else -1}')
 		Rdebug(f' <- {diag[c]} : {b}')
-#R(f'{Rmatrixname}[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
+R(f'{Rmatrixname}[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
 R(f'{Rmatrixname}<-rbind(rep(0,ncol({Rmatrixname})),{Rmatrixname})')
 R(f'{Rmatrixname}<-cbind(rep(0,nrow({Rmatrixname})),{Rmatrixname})')
