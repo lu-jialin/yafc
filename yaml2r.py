@@ -13,7 +13,7 @@ import json as jsonlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d' , action="store_true" , help='''Output variables but not R. This option should be used with editing source code.''')
-args,_ = parser.parse_known_args()
+args,Rmatrixnames = parser.parse_known_args()
 
 stdf = yamllib.safe_load(sys.stdin.read())
 
@@ -107,11 +107,14 @@ stdf = flatio(stdf)
 stdf = stripbool(stdf)
 stdf = numbering(stdf)
 
+if not Rmatrixnames : Rmatrixname = 'pdg'
+else : Rmatrixname = Rmatrixnames[0]
+
 R('insign<-c()')
 R('pdginput<-c()')
 R('pdgoutput<-c()')
-#R(f'pdg<-diag({len(diag)})') #include end
-R(f'pdg<-matrix(0,{len(diag)},{len(diag)})') #include end
+#R(f'{Rmatrixname}<-diag({len(diag)})') #include end
+R(f'{Rmatrixname}<-matrix(0,{len(diag)},{len(diag)})') #include end
 for i,d in enumerate(diag[1:]) :
 	if not isinstance(d,tuple) :
 		R(f'''insign[{i+1}]<-"{d}"''')
@@ -122,7 +125,7 @@ for i,d in enumerate(diag[1:]) :
 	#FIXME : string in `diag` cannot contain `"`
 
 def assignjmp(stdf , branch=[] , delay=[] , last=False) :
-#`R` <- pdg[] index order will change row-major or column-major
+#`R` <- {Rmatrixname}[] index order will change row-major or column-major
 #XXX column-major Now :
 	#None zero value in column means the destination
 	#None zero value in row means the source
@@ -133,12 +136,12 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		#print('atom')
 		if branch :
 			c,b = branch.pop()
-			R(f'pdg[{stdf},{c}]<-{1 if b else -1}')
+			R(f'{Rmatrixname}[{stdf},{c}]<-{1 if b else -1}')
 			Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				R(f'pdg[{stdf},{c}]<-{1 if b else -1}')
+				R(f'{Rmatrixname}[{stdf},{c}]<-{1 if b else -1}')
 				Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		return delay,stdf
 	elif isinstance(stdf,list) :
@@ -154,12 +157,12 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		cond,stdf = stdf.copy().popitem()
 		if branch :
 			c,b = branch.pop()
-			R(f'pdg[{cond},{c}]<-{1 if b else -1}')
+			R(f'{Rmatrixname}[{cond},{c}]<-{1 if b else -1}')
 			Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				R(f'pdg[{cond},{c}]<-{1 if b else -1}')
+				R(f'{Rmatrixname}[{cond},{c}]<-{1 if b else -1}')
 				Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
@@ -173,10 +176,10 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 			if delayif :
 				while(delayif) :
 					c,b = delayif.pop()
-					R(f'pdg[{cond},{c}]<-{1 if b else -1}')
+					R(f'{Rmatrixname}[{cond},{c}]<-{1 if b else -1}')
 					Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 			if toloop is not None :
-				R(f'pdg[{cond},{toloop}]<-1')
+				R(f'{Rmatrixname}[{cond},{toloop}]<-1')
 				Rdebug(f'{diag[cond]} <- {diag[toloop]}')
 			return ([(cond,False)]+delayif),None
 			#Only atom node can go back to loop
@@ -204,6 +207,8 @@ delay,_ = assignjmp(stdf)
 if delay :
 	while(delay) :
 		c,b = delay.pop()
-		R(f'pdg[{len(diag)},{c}]<-{1 if b else -1}')
+		R(f'{Rmatrixname}[{len(diag)},{c}]<-{1 if b else -1}')
 		Rdebug(f' <- {diag[c]} : {b}')
-#R(f'pdg[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
+#R(f'{Rmatrixname}[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
+R(f'{Rmatrixname}<-rbind(rep(0,ncol({Rmatrixname})),{Rmatrixname})')
+R(f'{Rmatrixname}<-cbind(rep(0,nrow({Rmatrixname})),{Rmatrixname})')
