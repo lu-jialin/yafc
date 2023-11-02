@@ -111,17 +111,17 @@ if not Rmatrixnames : Rmatrixname = 'pdg'
 else : Rmatrixname = Rmatrixnames[0]
 
 R('insign<-c()')
-R('pdginput<-c()')
-R('pdgoutput<-c()')
+R(f'{Rmatrixnames}input<-c()')
+R(f'{Rmatrixnames}output<-c()')
 #R(f'{Rmatrixname}<-diag({len(diag)})') #include end
 R(f'{Rmatrixname}<-matrix(0,{len(diag)},{len(diag)})') #include end
 for i,d in enumerate(diag[1:]) :
 	if not isinstance(d,tuple) :
 		R(f'''insign[{i+1}]<-"{d}"''')
 	else :
-		R(f'''pdginput[{i+1}]<-"{d[0]}"''')
+		R(f'''{Rmatrixnames}input[{i+1}]<-"{d[0]}"''')
 		R(f'''insign[{i+1}]<-"{d[1]}"''')
-		R(f'''pdgoutput[{i+1}]<-"{d[2]}"''')
+		R(f'''{Rmatrixnames}output[{i+1}]<-"{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
 def assignjmp(stdf , branch=[] , delay=[] , last=False) :
