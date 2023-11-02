@@ -206,4 +206,4 @@ if delay :
 		c,b = delay.pop()
 		R(f'pdg[{len(diag)},{c}]<-{1 if b else -1}')
 		Rdebug(f' <- {diag[c]} : {b}')
-R(f'pdg[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
+#R(f'pdg[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
