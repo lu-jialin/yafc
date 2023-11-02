@@ -5,10 +5,13 @@ rule yaml2r.py
     command = ./yaml2r.py < $in > $out
 rule r2dot.r
     command = ./r2dot.r $in > $out
-rule dot
+rule svg
     command = dot -Tsvg < $in > $out
+rule pdf
+    command = dot -Tpdf < $in > $out
 
 build o : mkdir
 build o/pdg.r : yaml2r.py stdf.yaml | o yaml2r.py
 build o/pdg.dot : r2dot.r o/pdg.r | o r2dot.r
-build o/pdg.svg : dot o/pdg.dot | o
+build o/pdg.svg : svg o/pdg.dot | o
+build o/pdg.pdf : pdf o/pdg.dot | o
