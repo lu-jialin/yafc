@@ -9,6 +9,6 @@ rule dot
     command = dot -Tsvg < $in > $out
 
 build o : mkdir
-build o/pdg.r : yaml2r.py stdf.yaml | o
-build o/pdg.dot : r2dot.r o/pdg.r | o
+build o/pdg.r : yaml2r.py stdf.yaml | o yaml2r.py
+build o/pdg.dot : r2dot.r o/pdg.r | o r2dot.r
 build o/pdg.svg : dot o/pdg.dot | o
