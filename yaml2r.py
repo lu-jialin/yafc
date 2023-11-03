@@ -22,7 +22,7 @@ _pyprint = print
 def print(*__p , end='\n' if not args.d else '\n') : _pyprint(*__p,end=end)
 if not args.d :
 	def Rdebug(*__p) : pass
-	def R(*__p , end=';') : _pyprint(*__p,end=end)
+	def R(*__p , end='\n') : _pyprint(*__p,end=end)
 else :
 	def Rdebug(*__p , end='\n') : _pyprint(*__p,end=end)
 	def R(*__p) : pass
@@ -213,3 +213,26 @@ if delay :
 R(f'{Rmatrixname}$M[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
 R(f'{Rmatrixname}$M<-rbind(rep(0,ncol({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'{Rmatrixname}$M<-cbind(rep(0,nrow({Rmatrixname}$M)),{Rmatrixname}$M)')
+R(f'''
+tvltvl<-1
+#Set `tvltvl` to a large number to show that which was set
+tvl <- colSums({Rmatrixname}$M!=0)==0 #Without loop back end node here
+#diag({Rmatrixname}$M[tvl,tvl]) = tvltvl
+diag({Rmatrixname}$M[c(FALSE,tvl[1:(length(tvl)-1)]),tvl]) <- tvltvl
+{Rmatrixname}$M[ncol({Rmatrixname}$M),ncol({Rmatrixname}$M)] <- 0
+{Rmatrixname}$I <- c('[start]',as.list({Rmatrixname}$I),'[end]')
+#Use `as.list` to avoid charter==c(charter) in R
+{Rmatrixname}$i <- c(NA,as.list({Rmatrixname}$i),NA)
+{Rmatrixname}$o <- c(NA,as.list({Rmatrixname}$o),NA)
+{Rmatrixname}$i  [[length({Rmatrixname}$I)+1]] <- NA ; {Rmatrixname}$i  <- {Rmatrixname}$i  [1:length({Rmatrixname}$I)] ; {Rmatrixname}$i [sapply( {Rmatrixname}$i ,is.null)] <- NA
+{Rmatrixname}$o [[length({Rmatrixname}$I)+1]] <- NA ; {Rmatrixname}$o <- {Rmatrixname}$o [1:length({Rmatrixname}$I)] ; {Rmatrixname}$o [sapply( {Rmatrixname}$o ,is.null)] <- NA
+#NULL cannot keep the none-IO head. Note that `is.null` is NOT vectorization
+#NOTE : A COMPLETE std-matrix here
+#{Rmatrixname}$M[,rowSums({Rmatrixname}$M!=0)==0] #Start of#The start point
+#{Rmatrixname}$M[,colSums({Rmatrixname}$M!=0)==0] #Start of#The end point
+#{Rmatrixname}$M[,colSums({Rmatrixname}$M!=0)==2] #Start of#Branchs(loop or if)
+#{Rmatrixname}$M[,colSums({Rmatrixname}$M!=0)==1] #Start of#Atoms(IO or trival)
+##Extrange col and row can get #end of#
+
+saveRDS({Rmatrixname},'/dev/stdout')
+''')

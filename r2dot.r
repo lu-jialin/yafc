@@ -1,29 +1,6 @@
 #!/bin/env Rscript
-#nnoremap gx :w<CR>:!Rscript <C-R>% #&& mupdf o/stdf$M.pdf<CR>
-rm()
-source(commandArgs(trailingOnly=TRUE)[1])
-#source('stdf$M.r')
-#TODO : Dynamic bind `stdf$M name via `ninja
 
-tvltvl<-1
-#Set `tvltvl` to a large number to show that which was set
-tvl <- colSums(stdf$M!=0)==0 #Without loop back end node here
-#diag(stdf$M[tvl,tvl]) = tvltvl
-diag(stdf$M[c(FALSE,tvl[1:(length(tvl)-1)]),tvl]) <- tvltvl
-stdf$M[ncol(stdf$M),ncol(stdf$M)] <- 0
-stdf$I <- c('[start]',as.list(stdf$I),'[end]')
-#Use `as.list` to avoid charter==c(charter) in R
-stdf$i <- c(NA,as.list(stdf$i),NA)
-stdf$o <- c(NA,as.list(stdf$o),NA)
-stdf$i  [[length(stdf$I)+1]] <- NA ; stdf$i  <- stdf$i  [1:length(stdf$I)] ; stdf$i [sapply( stdf$i ,is.null)] <- NA
-stdf$o [[length(stdf$I)+1]] <- NA ; stdf$o <- stdf$o [1:length(stdf$I)] ; stdf$o [sapply( stdf$o ,is.null)] <- NA
-#NULL cannot keep the none-IO head. Note that `is.null` is NOT vectorization
-#NOTE : A COMPLETE std-matrix here
-#stdf$M[,rowSums(stdf$M!=0)==0] #Start of#The start point
-#stdf$M[,colSums(stdf$M!=0)==0] #Start of#The end point
-#stdf$M[,colSums(stdf$M!=0)==2] #Start of#Branchs(loop or if)
-#stdf$M[,colSums(stdf$M!=0)==1] #Start of#Atoms(IO or trival)
-##Extrange col and row can get #end of#
+stdf <- readRDS(commandArgs(trailingOnly=TRUE)[1])
 
 ############################################
 dot=cat ; dotdebug=function(...){invisible()}
