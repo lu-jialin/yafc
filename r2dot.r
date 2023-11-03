@@ -75,6 +75,10 @@ dot('{edge[label="/T"]',sep='')
 dot(as.character(lapply(true,function(yx)paste0('"',yx[2],' ',yx[2],'"','->','"',yx[1],' ',yx[1],'"'))),sep='')
 dot('}',sep='')
 
+trival <- which(stdf$M==2,arr.ind=TRUE)
+trival <- as.data.frame(matrix(c(t(trival)),nrow=2))
+dot(as.character(lapply(trival,function(yx)paste0('"',yx[2],' ',yx[2],'"','->','"',yx[1],' ',yx[1],'"'))),sep='')
+
 dot(sapply(which(!is.na(stdf$o)) , function(n){
 	paste0('{rank=same',
 	paste0('{"',n,' i"[label=""shape=none width=0 height=0]}->','"',n,' ',n,'"[label="',stdf$i[n],'"style=dashed]') ,

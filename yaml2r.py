@@ -214,7 +214,7 @@ R(f'{Rmatrixname}$M[{len(diag)},{len(diag)}]<-1') #Mark the end point by self re
 R(f'{Rmatrixname}$M<-rbind(rep(0,ncol({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'{Rmatrixname}$M<-cbind(rep(0,nrow({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'''
-tvltvl<-1
+tvltvl<-2
 #Set `tvltvl` to a large number to show that which was set
 tvl <- colSums({Rmatrixname}$M!=0)==0 #Without loop back end node here
 #diag({Rmatrixname}$M[tvl,tvl]) = tvltvl
