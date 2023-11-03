@@ -1,4 +1,4 @@
-subninja build.ninja
+subninja sample.ninja
 rule pdf
     command = README/plot.r $in $out
 rule show
