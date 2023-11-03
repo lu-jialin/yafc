@@ -1,3 +1,4 @@
+include name.ninja
 rule cp
     command = cp $in $out
 rule mkdir
@@ -11,11 +12,11 @@ rule dot
     command = dot -T$type < $in > $out
 
 build o : mkdir
-build o/pdg.rds : yaml2r.py stdf.yaml | o yaml2r.py
-build o/pdg.dot : r2dot.r   o/pdg.rds | o r2dot.r
+build o/$name.rds : yaml2r.py stdf.yaml | o yaml2r.py
+build o/$name.dot : r2dot.r   o/$name.rds | o r2dot.r
 
-build o/pdg.svg : dot o/pdg.dot | o
+build o/$name.svg : dot o/$name.dot | o
     type = svg
-build o/pdg.pdf : dot o/pdg.dot | o
+build o/$name.pdf : dot o/$name.dot | o
     type = pdf
-build README/pdg.svg : cp o/pdg.svg
+build README/$name.svg : cp o/$name.svg

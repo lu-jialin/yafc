@@ -1,10 +1,12 @@
 subninja sample.ninja
+
+include name.ninja
 rule pdf
     command = README/plot.r $in $out
 rule show
     command = $SVG $in
 
-build README/plot.svg : pdf o/pdg.rds
+build README/plot.svg : pdf o/$name.rds
 build show : show README/plot.svg
     SVG = mupdf
 
