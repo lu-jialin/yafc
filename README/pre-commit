@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed.
+# Called by "git commit" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message if
+# it wants to stop the commit.
+#
+# To enable this hook, rename this file to "pre-commit".
+for m4 in `find -type f -name "*.md.m4"`
+do
+	__root__="`git rev-parse --show-toplevel`"
+	__git__="`git rev-parse --show-toplevel|xargs basename`"
+	__relative_root__="`realpath -L --relative-to=${m4%/*} $(git rev-parse --show-toplevel)`"
+	__path__="`echo $(realpath ${m4%/*})|grep -oP \"(?<=$(git rev-parse --show-toplevel)/).*\"`"
+	set -x
+	m4 \
+	-D__git__=$__git__ \
+	-D__root__=$__root__ \
+	-D__path__=$__path__ \
+	-D__relative_root__=$__relative_root__ \
+	$m4 \
+	| tee ${m4%.*} > /dev/null && git add ${m4%.*}
+	set +x
+done
