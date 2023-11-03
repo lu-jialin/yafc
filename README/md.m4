@@ -2,7 +2,6 @@ divert(-1)
 define(`__code__', _mc_ `$1' _mc_)
 define(`__md_code__', changequote([,])[changequote([,])```changequote(`,')]changequote(`,'))
 define(`_mc_', `__md_code__')
-changecom(`>>', `<<')
 define(`__link__', [`$1']($1))
 define(`__flink__', [`__code__($1)']($1))
 define(`__m4_declaration__',

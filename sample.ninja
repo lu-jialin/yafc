@@ -1,3 +1,5 @@
+rule cp
+    command = cp $in $out
 rule mkdir
     command = mkdir -p $out
 
@@ -16,3 +18,4 @@ build o/pdg.svg : dot o/pdg.dot | o
     type = svg
 build o/pdg.pdf : dot o/pdg.dot | o
     type = pdf
+build README/pdg.svg : cp o/pdg.svg
