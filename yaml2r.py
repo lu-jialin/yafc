@@ -107,25 +107,26 @@ stdf = flatio(stdf)
 stdf = stripbool(stdf)
 stdf = numbering(stdf)
 
-if not Rmatrixnames : Rmatrixname = 'pdg'
+if not Rmatrixnames : Rmatrixname = 'stdf'
 else : Rmatrixname = Rmatrixnames[0]
 
-R(f'{Rmatrixname}_insign<-c()')
-R(f'{Rmatrixname}_input<-c()')
-R(f'{Rmatrixname}_output<-c()')
-#R(f'{Rmatrixname}<-diag({len(diag)})') #include end
-R(f'{Rmatrixname}<-matrix(0,{len(diag)},{len(diag)})') #include end
+R(f'{Rmatrixname}<-list()') #include end
+R(f'{Rmatrixname}$I<-c()')
+R(f'{Rmatrixname}$i<-c()')
+R(f'{Rmatrixname}$o<-c()')
+#R(f'{Rmatrixname}$M<-diag({len(diag)})') #include end
+R(f'{Rmatrixname}$M<-matrix(0,{len(diag)},{len(diag)})') #include end
 for i,d in enumerate(diag[1:]) :
 	if not isinstance(d,tuple) :
-		R(f'''{Rmatrixname}_insign[{i+1}]<-"{d}"''')
+		R(f'''{Rmatrixname}$I[{i+1}]<-"{d}"''')
 	else :
-		R(f'''{Rmatrixname}_input[{i+1}]<-"{d[0]}"''')
-		R(f'''{Rmatrixname}_insign[{i+1}]<-"{d[1]}"''')
-		R(f'''{Rmatrixname}_output[{i+1}]<-"{d[2]}"''')
+		R(f'''{Rmatrixname}$i[{i+1}]<-"{d[0]}"''')
+		R(f'''{Rmatrixname}$I[{i+1}]<-"{d[1]}"''')
+		R(f'''{Rmatrixname}$o[{i+1}]<-"{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
 def assignjmp(stdf , branch=[] , delay=[] , last=False) :
-#`R` <- {Rmatrixname}[] index order will change row-major or column-major
+#`R` <- {Rmatrixname}$M[] index order will change row-major or column-major
 #XXX column-major Now :
 	#None zero value in column means the destination
 	#None zero value in row means the source
@@ -136,12 +137,12 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		#print('atom')
 		if branch :
 			c,b = branch.pop()
-			R(f'{Rmatrixname}[{stdf},{c}]<-{1 if b else -1}')
+			R(f'{Rmatrixname}$M[{stdf},{c}]<-{1 if b else -1}')
 			Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				R(f'{Rmatrixname}[{stdf},{c}]<-{1 if b else -1}')
+				R(f'{Rmatrixname}$M[{stdf},{c}]<-{1 if b else -1}')
 				Rdebug(f'{diag[stdf]} <- {diag[c]} : {b}')
 		return delay,stdf
 	elif isinstance(stdf,list) :
@@ -157,12 +158,12 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 		cond,stdf = stdf.copy().popitem()
 		if branch :
 			c,b = branch.pop()
-			R(f'{Rmatrixname}[{cond},{c}]<-{1 if b else -1}')
+			R(f'{Rmatrixname}$M[{cond},{c}]<-{1 if b else -1}')
 			Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if delay :
 			while(delay) :
 				c,b = delay.pop()
-				R(f'{Rmatrixname}[{cond},{c}]<-{1 if b else -1}')
+				R(f'{Rmatrixname}$M[{cond},{c}]<-{1 if b else -1}')
 				Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 		if None : pass
 		elif isinstance(stdf,tuple) and len(stdf)==1 :
@@ -176,10 +177,10 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 			if delayif :
 				while(delayif) :
 					c,b = delayif.pop()
-					R(f'{Rmatrixname}[{cond},{c}]<-{1 if b else -1}')
+					R(f'{Rmatrixname}$M[{cond},{c}]<-{1 if b else -1}')
 					Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 			if toloop is not None :
-				R(f'{Rmatrixname}[{cond},{toloop}]<-1')
+				R(f'{Rmatrixname}$M[{cond},{toloop}]<-1')
 				Rdebug(f'{diag[cond]} <- {diag[toloop]}')
 			return ([(cond,False)]+delayif),None
 			#Only atom node can go back to loop
@@ -207,8 +208,8 @@ delay,_ = assignjmp(stdf)
 if delay :
 	while(delay) :
 		c,b = delay.pop()
-		R(f'{Rmatrixname}[{len(diag)},{c}]<-{1 if b else -1}')
+		R(f'{Rmatrixname}$M[{len(diag)},{c}]<-{1 if b else -1}')
 		Rdebug(f' <- {diag[c]} : {b}')
-R(f'{Rmatrixname}[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
-R(f'{Rmatrixname}<-rbind(rep(0,ncol({Rmatrixname})),{Rmatrixname})')
-R(f'{Rmatrixname}<-cbind(rep(0,nrow({Rmatrixname})),{Rmatrixname})')
+R(f'{Rmatrixname}$M[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
+R(f'{Rmatrixname}$M<-rbind(rep(0,ncol({Rmatrixname}$M)),{Rmatrixname}$M)')
+R(f'{Rmatrixname}$M<-cbind(rep(0,nrow({Rmatrixname}$M)),{Rmatrixname}$M)')
