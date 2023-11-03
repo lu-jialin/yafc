@@ -120,9 +120,9 @@ for i,d in enumerate(diag[1:]) :
 	if not isinstance(d,tuple) :
 		R(f'''{Rmatrixname}$I[{i+1}]<-"{d}"''')
 	else :
-		R(f'''{Rmatrixname}$i[{i+1}]<-"{d[0]}"''')
+		R(f'''{Rmatrixname}$o[{i+1}]<-"{d[0]}"''')
 		R(f'''{Rmatrixname}$I[{i+1}]<-"{d[1]}"''')
-		R(f'''{Rmatrixname}$o[{i+1}]<-"{d[2]}"''')
+		R(f'''{Rmatrixname}$i[{i+1}]<-"{d[2]}"''')
 	#FIXME : string in `diag` cannot contain `"`
 
 def assignjmp(stdf , branch=[] , delay=[] , last=False) :
