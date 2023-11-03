@@ -180,7 +180,7 @@ def assignjmp(stdf , branch=[] , delay=[] , last=False) :
 					R(f'{Rmatrixname}$M[{cond},{c}]<-{1 if b else -1}')
 					Rdebug(f'{diag[cond]} <- {diag[c]} : {b}')
 			if toloop is not None :
-				R(f'{Rmatrixname}$M[{cond},{toloop}]<-1')
+				R(f'{Rmatrixname}$M[{cond},{toloop}]<-2')
 				Rdebug(f'{diag[cond]} <- {diag[toloop]}')
 			return ([(cond,False)]+delayif),None
 			#Only atom node can go back to loop
