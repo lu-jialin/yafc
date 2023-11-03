@@ -74,13 +74,13 @@ grid[,1:(length(grid)-1)] <- lapply(grid[,1:(length(grid)-1)],function(n)paste0(
 grid<-t(grid)
 dot('{edge[dir=none style=',showgrid,']',sep='') ; for(col in grid)dot(paste0(col),sep='') ; dot('}',sep='')
 
-stdf$I[rowSums(stdf$M!=0)==0] <- sapply(stdf$I[rowSums(stdf$M!=0)==0],function(step)paste0('[label="',step,'" shape=circle]'))
+stdf$I[rowSums(stdf$M!=0)==0] <- sapply(stdf$I[rowSums(stdf$M!=0)==0],function(step)paste0('[label="',step,'" shape=point]'))
 
 stdf$I[colSums(stdf$M!=0)==2] <- sapply(stdf$I[colSums(stdf$M!=0)==2],function(step)paste0('[label="',step,'" shape=diamond]'))
 stdf$I[!is.na(stdf$o)] <- sapply(stdf$I[!is.na(stdf$o)],function(step)paste0('[label="',step,'" shape=parallelogram]'))
 stdf$I[is.na(stdf$o)&colSums(stdf$M!=0)==1&rowSums(stdf$M!=0)!=0] <- as.vector(sapply(stdf$I[is.na(stdf$o)&colSums(stdf$M!=0)==1&rowSums(stdf$M!=0)!=0],function(step)paste0('[label="',step,'" shape=box]')))
 
-stdf$I[colSums(stdf$M!=0)==0] <- sapply(stdf$I[colSums(stdf$M!=0)==0],function(step)paste0('[label="',step,'" shape=circle]'))
+stdf$I[colSums(stdf$M!=0)==0] <- sapply(stdf$I[colSums(stdf$M!=0)==0],function(step)paste0('[label="',step,'" shape=point]'))
 
 #TODO : Refer to ``data.fram as V-V-matrix``
 for(i in 1:length(stdf$I))stdf$I[[i]] <- paste0('"',i,' ',i,'"',stdf$I[[i]])
