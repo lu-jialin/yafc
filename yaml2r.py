@@ -210,16 +210,16 @@ if delay :
 		c,b = delay.pop()
 		R(f'{Rmatrixname}$M[{len(diag)},{c}]<-{1 if b else -1}')
 		Rdebug(f' <- {diag[c]} : {b}')
-R(f'{Rmatrixname}$M[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat
+R(f'{Rmatrixname}$M[{len(diag)},{len(diag)}]<-1') #Mark the end point by self repeat. This will be remove after setting trival node paths.
 R(f'{Rmatrixname}$M<-rbind(rep(0,ncol({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'{Rmatrixname}$M<-cbind(rep(0,nrow({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'''
 tvltvl<-2
 #Set `tvltvl` to a large number to show that which was set
-tvl <- colSums({Rmatrixname}$M!=0)==0 #Without loop back end node here
+tvl <- colSums({Rmatrixname}$M!=0)==0 #Without loop back end node here and without end point cause the self repeat mark
 #diag({Rmatrixname}$M[tvl,tvl]) = tvltvl
 diag({Rmatrixname}$M[c(FALSE,tvl[1:(length(tvl)-1)]),tvl]) <- tvltvl
-{Rmatrixname}$M[ncol({Rmatrixname}$M),ncol({Rmatrixname}$M)] <- 0
+{Rmatrixname}$M[ncol({Rmatrixname}$M),ncol({Rmatrixname}$M)] <- 0 #Remove end point self repeat mark
 {Rmatrixname}$I <- c('[start]',as.list({Rmatrixname}$I),'[end]')
 #Use `as.list` to avoid charter==c(charter) in R
 {Rmatrixname}$i <- c(NA,as.list({Rmatrixname}$i),NA)
