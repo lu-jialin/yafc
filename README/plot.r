@@ -10,7 +10,6 @@ theme[['greenred']] = c('coral3','white','chartreuse4')
 #pdg<-cbind(rep(0,nrow(pdg)),pdg)
 
 pdf(commandArgs(trailingOnly=TRUE)[2])
-plot(pdg,col=c('coral3','white','chartreuse4'),family='mono')
 par(mar=diag(diag(4)*4))
 plot(pdg,col=theme$greenred,family='mono')
 dev.off()
