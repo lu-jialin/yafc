@@ -1,0 +1,9 @@
+subninja build.ninja
+rule pdf
+    command = README/plot.r $in $out
+rule show
+    command = $PDF $in
+
+build o/plot.pdf : pdf o/pdg.rds
+build show : show o/plot.pdf
+    PDF = mupdf
