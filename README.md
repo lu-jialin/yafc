@@ -60,15 +60,16 @@ Generate a flowchart from a YAML file.
 ### Invoke
 
 ```
-./yaml2py < .yaml | R -s --no-save > .rds && ./r2dot.r .rds
+./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r
 ```
-where ``` .yaml ``` is the flow chart yaml file and
-``` .rds ``` could be any filename,
-just note that the file ``` .rds ``` will be covered
-if existing.
-will generate a dot file ``` .dot ```,
+where ``` .yaml ``` is the flow chart yaml file
+will generate a dot file ``` .dot ``` to standard output,
 use [graphviz](https://graphviz.org/)
 to convert it to pdf/svg/png/*etc*.
+*e.g.* to svg :
+```
+./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r | dot -Tsvg
+```
 
 [``` sample.ninja ```](sample.ninja) show a example from [``` stdf.yaml ```](stdf.yaml)
 
@@ -78,7 +79,7 @@ to process the core data to generate any other readable filetipe. Refer to [#Dev
 ### E.g.
 
 From [``` stdf.yaml ```](stdf.yaml)
-![](./README/pdg.svg)
+![](./README/stdf.svg)
 
 ## Development
 
@@ -104,7 +105,7 @@ STM([**S**]) specification :
 	- [**S**]<sub><i>i</i>,<i>j</i></sub> is **-1**
 		- If *j* is a branch node and the *false* branch path is from *i* to *j*
 	- [**S**]<sub><i>i</i>,<i>j</i></sub> ∉ **{-1 , 0 , 1}**
-		- If *j* is a trival node and there is a path from *j* to *i*
+		- If *j* is a trival node and there is a path from *i* to *j*
 
 		> [``` yaml2r.py ```](yaml2r.py) use 2 here
 
