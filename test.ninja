@@ -6,7 +6,7 @@ rule pdf
 rule show
     command = $SVG $in
 
-build README/plot.svg : pdf o/$name.rds
+build README/plot.svg : pdf o/$O.rds
 build show : show README/plot.svg
     SVG = mupdf
 

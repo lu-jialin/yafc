@@ -4,19 +4,18 @@ rule cp
 rule mkdir
     command = mkdir -p $out
 
-rule yaml2r.py
+rule yafc
+    command = ./yaml2r.py < $in | R -s --no-save | R -s --no-save -f ./r2dot.r | dot -T$type > $out
+rule rds
     command = ./yaml2r.py < $in | R -s --no-save > $out
-rule r2dot.r
-    command = ./r2dot.r $in > $out
-rule dot
-    command = dot -T$type < $in > $out
 
 build o : mkdir
-build o/$name.rds : yaml2r.py stdf.yaml | o yaml2r.py
-build o/$name.dot : r2dot.r   o/$name.rds | o r2dot.r
-
-build o/$name.svg : dot o/$name.dot | o
+build o/$O.rds : rds $I.yaml
+build o/$O.$type : yafc $I.yaml | o yaml2r.py r2dot.r
     type = svg
-build o/$name.pdf : dot o/$name.dot | o
+build o/$O.$type : yafc $I.yaml | o yaml2r.py r2dot.r
     type = pdf
-build README/$name.svg : cp o/$name.svg
+
+build README/$O.svg : cp o/$O.svg
+
+default o/$O.svg o/$O.pdf README/$O.svg 

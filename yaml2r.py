@@ -214,6 +214,7 @@ R(f'{Rmatrixname}$M[{len(diag)},{len(diag)}]<-1') #Mark the end point by self re
 R(f'{Rmatrixname}$M<-rbind(rep(0,ncol({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'{Rmatrixname}$M<-cbind(rep(0,nrow({Rmatrixname}$M)),{Rmatrixname}$M)')
 R(f'''
+formals(file)$raw<-T
 tvltvl<-2
 #Set `tvltvl` to a large number to show that which was set
 tvl <- colSums({Rmatrixname}$M!=0)==0 #Without loop back end node here and without end point cause the self repeat mark
@@ -234,5 +235,8 @@ diag({Rmatrixname}$M[c(FALSE,tvl[1:(length(tvl)-1)]),tvl]) <- tvltvl
 #{Rmatrixname}$M[,colSums({Rmatrixname}$M!=0)==1] #Start of#Atoms(IO or trival)
 ##Extrange col and row can get #end of#
 
-saveRDS({Rmatrixname},'/dev/stdout')
+options(warn=-1)
+#saveRDS({Rmatrixname},file('/dev/stdout','wb',raw=T),compress=F) #compress will be ignored
+saveRDS({Rmatrixname},'/dev/stdout',compress=F)
+options(warn=0)
 ''')

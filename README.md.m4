@@ -60,15 +60,16 @@ Generate a flowchart from a YAML file.
 ### Invoke
 
 _mc_
-./yaml2py < .yaml | R -s --no-save > .rds && ./r2dot.r .rds
+./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r
 _mc_
-where _mc_ .yaml _mc_ is the flow chart yaml file and
-_mc_ .rds _mc_ could be any filename,
-just note that the file _mc_ .rds _mc_ will be covered
-if existing.
-will generate a dot file _mc_ .dot _mc_,
+where _mc_ .yaml _mc_ is the flow chart yaml file
+will generate a dot file _mc_ .dot _mc_ to standard output,
 use [graphviz](https://graphviz.org/)
 to convert it to pdf/svg/png/*etc*.
+*e.g.* to svg :
+_mc_
+./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r | dot -Tsvg
+_mc_
 
 __flink__(sample.ninja) show a example from __flink__(stdf.yaml)
 
@@ -78,7 +79,7 @@ to process the core data to generate any other readable filetipe. Refer to [#Dev
 ### E.g.
 
 From __flink__(stdf.yaml)
-![](__relative_root__/README/pdg.svg)
+![](__relative_root__/README/stdf.svg)
 
 ## Development
 
@@ -106,7 +107,7 @@ define(`Sij',`[**S**]<sub><i>i</i>,<i>j</i></sub>')dnl
 	- Sij is **-1**
 		- If *j* is a branch node and the *false* branch path is from *i* to *j*
 	- Sij ∉ **{-1 , 0 , 1}**
-		- If *j* is a trival node and there is a path from *j* to *i*
+		- If *j* is a trival node and there is a path from *i* to *j*
 
 		> __flink__(yaml2r.py) use 2 here
 

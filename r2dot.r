@@ -1,6 +1,7 @@
 #!/bin/env Rscript
 
-stdf <- readRDS(commandArgs(trailingOnly=TRUE)[1])
+#stdf <- readRDS(commandArgs(trailingOnly=TRUE)[1])
+stdf=readRDS(gzcon(base::file('/dev/stdin','rb',raw=T)))
 
 ############################################
 dot=cat ; dotdebug=function(...){invisible()}
@@ -18,7 +19,9 @@ coor <- diag(ncol(stdf$M))
 coor <- as.data.frame(coor)
 
 for(i in 1:nrow(coor)) for(j in 1:ncol(coor)) coor[i,j] <- paste0('"',i,' ',j,'"')
-dot(as.character(sapply(coor,function(c)paste0(c,'[label="" shape=none width=0 height=0]'))),sep='')
+dot('{node[label="" shape=none width=0 height=0]')
+dot(as.character(sapply(coor,function(c)c),sep=''))
+dot('}')
 #dot(as.character(sapply(coor,function(c)paste0(c,'[shape=box]'))),sep='')
 
 #x grid
