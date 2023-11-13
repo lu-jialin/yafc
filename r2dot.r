@@ -1,13 +1,13 @@
 #!/bin/env Rscript
 
-#stdf <- readRDS(commandArgs(trailingOnly=TRUE)[1])
+name <- commandArgs(trailingOnly=TRUE)[1]
 stdf=readRDS(gzcon(base::file('/dev/stdin','rb',raw=T)))
 
 ############################################
 dot=cat ; dotdebug=function(...){invisible()}
 #dot=function(...){invisible()} ; dotdebug=print #debug
 
-dot('digraph"','stdf$M','"{rankdir=TD ',sep='')
+dot('digraph"',name,'$M','"{rankdir=TD ',sep='')
 dot('graph[fontname="CMU Typewriter Text"]',sep='')
 dot('node[fontname="CMU Typewriter Text"]',sep='')
 dot('edge[fontname="CMU Typewriter Text"arrowhead=vee arrowtail=vee]',sep='')
