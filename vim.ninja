@@ -14,8 +14,9 @@ rule r2dot
 rule dot
     command = dot -T$type $in
 
+build true : phony
 build o : mkdir
-build o/$O.r : yaml2r $I.yaml | o yaml2r.py
+build o/$O.r : yaml2r $I.yaml | o yaml2r.py true
 build o/$O.rds : rds o/$O.r
 build o/$O.dot : r2dot o/$O.rds
 build o/$O.$type : dot o/$O.dot
