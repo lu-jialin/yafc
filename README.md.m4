@@ -62,8 +62,9 @@ Generate a flowchart from a YAML file.
 _mc_
 ./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r
 _mc_
-where _mc_ .yaml _mc_ is the flow chart yaml file
-will generate a dot file _mc_ .dot _mc_ to standard output,
+where _mc_ .yaml _mc_ is the flow chart yaml file.
+
+Command above will generate a dot file _mc_ .dot _mc_ to standard output,
 use [graphviz](https://graphviz.org/)
 to convert it to pdf/svg/png/*etc*.
 *e.g.* to svg :
