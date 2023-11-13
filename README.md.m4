@@ -155,11 +155,14 @@ divert(0)dnl
 #### Why YAML
 
 - YAML may be the readable, structured text contain most data type
+
+	> Especially YAML can use boolean value as key to describe branch
+
 - YAML can show more "pure" content of the flow chart
 	- YAML use as less as possible none whitespace character to define list
-	
+
 		> Especially list element can be without suffix. Such as _mc_ , _mc_ in TOML or JSON
-	
+
 	- YAML use as less as possible none whitespace character to define string
 - Pyyaml is a part of python standard
 
