@@ -118,6 +118,7 @@ Some properties in a STM([**S**]) of correct standard control flow :
 	- [**S**]<sub><i>i</i>,<i>j</i></sub> is trival value(∉ **{-1 , 0 , 1}**) and *j* < *i* + 1 means a loop back
 
 *e.g.* STM of [``` stdf.yaml ```](stdf.yaml) is :
+
 ![](./README/plot.svg)
 
 [``` yaml2r.py ```](yaml2r.py) generate R statements to generate a R list data contain :

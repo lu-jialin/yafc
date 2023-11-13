@@ -124,6 +124,7 @@ Some properties in a STM([**S**]) of correct standard control flow :
 	- Sij is trival value(∉ **{-1 , 0 , 1}**) and *j* < *i* + 1 means a loop back
 
 *e.g.* STM of __flink__(stdf.yaml) is :
+
 ![](__relative_root__/README/plot.svg)
 
 __flink__(yaml2r.py) generate R statements to generate a R list data contain :
