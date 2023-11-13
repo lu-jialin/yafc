@@ -54,7 +54,7 @@ Generate a flowchart from a YAML file.
 - Empy branch or loop is not allowed
 
 	> Note that **yafc** cannot distinguish infinite loop,
-	> any loop contain any step(but at least 1).
+	> any loop contain any step(but at least 1) will be infinite with a infinite condition.
 	> Of cause we can write 'doing nothing' in node or 'TRUE'/'infinite' in condition.
 
 ### Invoke
