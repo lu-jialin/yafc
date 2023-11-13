@@ -1,0 +1,22 @@
+include name.ninja
+rule cp
+    command = cp $in $out
+rule mkdir
+    command = mkdir -p $out
+
+rule yaml2r
+    command = ./yaml2r.py vim > $out
+    pool = console
+rule rds
+    command = Rscript $in > $out
+rule r2dot
+    command = Rscript ./r2dot.r vim < $in > $out
+rule dot
+    command = dot -T$type $in
+
+build o : mkdir
+build o/$O.r : yaml2r $I.yaml | o yaml2r.py
+build o/$O.rds : rds o/$O.r
+build o/$O.dot : r2dot o/$O.rds
+build o/$O.$type : dot o/$O.dot
+    type = svg
