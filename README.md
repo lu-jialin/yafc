@@ -85,10 +85,6 @@ From [``` stdf.yaml ```](stdf.yaml)
 
 ### Standard Flow Matrix -- The MOST IMPORTANT data structure
 
-This concept comes from yafc,
-*aka* from trying convert yaml to flow chart.
-But it is independent from YAML or chart.
-
 As the name suggests, Standard Flow Matrix(STM) is a matrix.
 Actually it is similar to a adjacency matrix of control flow in
 Program Dependency Graph(PDG).
