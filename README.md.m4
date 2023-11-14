@@ -82,6 +82,12 @@ to process the core data to generate any other readable filetipe. Refer to [#Dev
 From __flink__(stdf.yaml)
 ![](__relative_root__/README/stdf.svg)
 
+### Docker
+
+_mc_
+docker run --rm -i lujialin/yafc:svg < stdf.yaml
+_mc_
+
 ## Development
 
 ### Standard Flow Matrix -- The MOST IMPORTANT data structure

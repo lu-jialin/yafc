@@ -82,6 +82,12 @@ to process the core data to generate any other readable filetipe. Refer to [#Dev
 From [``` stdf.yaml ```](stdf.yaml)
 ![](./README/stdf.svg)
 
+### Docker
+
+```
+docker run --rm -i lujialin/yafc:svg < stdf.yaml
+```
+
 ## Development
 
 ### Standard Flow Matrix -- The MOST IMPORTANT data structure
