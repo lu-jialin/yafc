@@ -85,8 +85,10 @@ From __flink__(stdf.yaml)
 ### Docker
 
 _mc_
-docker run --rm -i lujialin/yafc:svg < stdf.yaml
+docker run --rm -i lujialin/yafc:dot < stdf.yaml | dot -Tsvg
 _mc_
+
+> Currently only the _mc_ :dot _mc_ is valid. Alpine linux graphviz package doesn't work, please use new version.
 
 ## Development
 
