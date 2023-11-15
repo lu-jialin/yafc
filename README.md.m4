@@ -147,7 +147,7 @@ __flink__(yaml2r.py) generate R statements to generate a R list data contain :
 - STM of control flow described by the yaml file in _mc_ $M _mc_ field
 - Node description in _mc_ $I _mc_ field
 - Node input description in _mc_ $i _mc_ field
-- Node input description in _mc_ $o _mc_ field
+- Node output description in _mc_ $o _mc_ field
 
 as _mc_ .rds _mc_ format to the standard output.
 

@@ -141,7 +141,7 @@ Some properties in a STM([**S**]) of correct standard control flow :
 - STM of control flow described by the yaml file in ``` $M ``` field
 - Node description in ``` $I ``` field
 - Node input description in ``` $i ``` field
-- Node input description in ``` $o ``` field
+- Node output description in ``` $o ``` field
 
 as ``` .rds ``` format to the standard output.
 
