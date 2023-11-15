@@ -1,0 +1,24 @@
+repository = lujialin/yafc
+rule minimal
+    command = docker build -f$in -t $repository:$out .
+rule readable
+    command = (grep -xF -- ".$out.dockerfile" .gitignore || echo ".$out.dockerfile" | tee --append .gitignore) && m4 -Dm4_base=$base -Dm4_type=$out $in > .$out.dockerfile && docker build -f.$out.dockerfile -t $repository:$out .
+rule push
+    command = docker push $repository:$in
+
+build dot : minimal dot.dockerfile
+build svg : readable readable.m4.dockerfile
+    base = debian
+build pdf : readable readable.m4.dockerfile
+    base = debian
+
+build push : phony push/dot push/pdf push/svg
+
+build push/$type : push $type
+    type = dot
+build push/$type : push $type
+    type = svg
+build push/$type : push $type
+    type = pdf
+
+default dot svg pdf

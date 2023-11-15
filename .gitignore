@@ -1,3 +1,5 @@
 /o
 /*.pdf
 .ninja_log
+.svg.dockerfile
+.pdf.dockerfile
