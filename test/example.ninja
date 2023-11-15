@@ -1,4 +1,4 @@
-include name.ninja
+include test/name.ninja
 rule cp
     command = cp $in $out
 rule mkdir

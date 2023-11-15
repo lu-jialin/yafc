@@ -1,6 +1,6 @@
-subninja sample.ninja
+subninja test/example.ninja
 
-include name.ninja
+include test/name.ninja
 rule pdf
     command = README/plot.r $in $out
 rule show

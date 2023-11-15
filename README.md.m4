@@ -72,14 +72,14 @@ _mc_
 ./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r | dot -Tsvg
 _mc_
 
-__flink__(sample.ninja) show a example from __flink__(stdf.yaml)
+__flink__(test/example.ninja) show a example from __flink__(test/stdf.yaml)
 
 Or use [R](https://r-project.org/)
 to process the core data to generate any other readable filetipe. Refer to [#Development](#Development).
 
 ### E.g.
 
-From __flink__(stdf.yaml)
+From __flink__(test/stdf.yaml)
 ![](__relative_root__/README/stdf.svg)
 
 ### Docker
@@ -89,7 +89,7 @@ From __flink__(stdf.yaml)
 	*e.g.*
 
 	_mc_
-	docker run --rm -i lujialin/yafc:dot < stdf.yaml | dot -Tsvg
+	docker run --rm -i lujialin/yafc:dot < test/stdf.yaml | dot -Tsvg
 	_mc_
 
 - image _mc_ lujialin/yafc:svg _mc_  
@@ -138,7 +138,7 @@ Some properties in a STM([**S**]) of correct standard control flow :
 	- Sii is always 0
 	- Sij is trival value(∉ **{-1 , 0 , 1}**) and *j* < *i* + 1 means a loop back
 
-*e.g.* STM of __flink__(stdf.yaml) is :
+*e.g.* STM of __flink__(test/stdf.yaml) is :
 
 ![](__relative_root__/README/plot.svg)
 

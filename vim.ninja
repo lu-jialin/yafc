@@ -1,4 +1,5 @@
-include name.ninja
+I = vim
+O = vim
 rule cp
     command = cp $in $out
 rule mkdir
@@ -16,7 +17,7 @@ rule dot
 
 build true : phony
 build o : mkdir
-build o/$O.r : yaml2r $I.yaml | o yaml2r.py true
+build o/$O.r : yaml2r | o yaml2r.py true
 build o/$O.rds : rds o/$O.r
 build o/$O.dot : r2dot o/$O.rds
 build o/$O.$type : dot o/$O.dot

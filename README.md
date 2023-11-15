@@ -72,14 +72,14 @@ to convert it to pdf/svg/png/*etc*.
 ./yaml2py < .yaml | R -s --no-save | R -s --no-save -f ./r2dot.r | dot -Tsvg
 ```
 
-[``` sample.ninja ```](sample.ninja) show a example from [``` stdf.yaml ```](stdf.yaml)
+[``` test/example.ninja ```](test/example.ninja) show a example from [``` test/stdf.yaml ```](test/stdf.yaml)
 
 Or use [R](https://r-project.org/)
 to process the core data to generate any other readable filetipe. Refer to [#Development](#Development).
 
 ### E.g.
 
-From [``` stdf.yaml ```](stdf.yaml)
+From [``` test/stdf.yaml ```](test/stdf.yaml)
 ![](./README/stdf.svg)
 
 ### Docker
@@ -89,7 +89,7 @@ From [``` stdf.yaml ```](stdf.yaml)
 	*e.g.*
 
 	```
-	docker run --rm -i lujialin/yafc:dot < stdf.yaml | dot -Tsvg
+	docker run --rm -i lujialin/yafc:dot < test/stdf.yaml | dot -Tsvg
 	```
 
 - image ``` lujialin/yafc:svg ```  
@@ -132,7 +132,7 @@ Some properties in a STM([**S**]) of correct standard control flow :
 	- [**S**]<sub><i>i</i>,<i>i</i></sub> is always 0
 	- [**S**]<sub><i>i</i>,<i>j</i></sub> is trival value(∉ **{-1 , 0 , 1}**) and *j* < *i* + 1 means a loop back
 
-*e.g.* STM of [``` stdf.yaml ```](stdf.yaml) is :
+*e.g.* STM of [``` test/stdf.yaml ```](test/stdf.yaml) is :
 
 ![](./README/plot.svg)
 
