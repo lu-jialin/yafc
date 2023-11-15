@@ -84,9 +84,18 @@ From [``` stdf.yaml ```](stdf.yaml)
 
 ### Docker
 
-```
-docker run --rm -i lujialin/yafc:dot < stdf.yaml | dot -Tsvg
-```
+- image ``` lujialin/yafc:dot ```  
+	Read yaml content from standard input and print dot content to standard output  
+	*e.g.*
+
+	```
+	docker run --rm -i lujialin/yafc:dot < stdf.yaml | dot -Tsvg
+	```
+
+- image ``` lujialin/yafc:svg ```  
+	Read yaml content from standard input and print svg content to standard output  
+- image ``` lujialin/yafc:pdf ```  
+	Read yaml content from standard input and print pdf content to standard output  
 
 > Currently only the ``` :dot ``` is valid. Alpine linux graphviz package doesn't work, please use new version.
 
