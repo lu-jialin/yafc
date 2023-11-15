@@ -93,9 +93,9 @@ From [``` test/stdf.yaml ```](test/stdf.yaml)
 	```
 
 - image ``` lujialin/yafc:svg ```  
-	Read yaml content from standard input and print svg content to standard output  
+	Read yaml content from standard input and print svg content to standard output
 - image ``` lujialin/yafc:pdf ```  
-	Read yaml content from standard input and print pdf content to standard output  
+	Read yaml content from standard input and print pdf content to standard output
 
 ## Development
 

@@ -93,9 +93,9 @@ From __flink__(test/stdf.yaml)
 	_mc_
 
 - image _mc_ lujialin/yafc:svg _mc_  
-	Read yaml content from standard input and print svg content to standard output  
+	Read yaml content from standard input and print svg content to standard output
 - image _mc_ lujialin/yafc:pdf _mc_  
-	Read yaml content from standard input and print pdf content to standard output  
+	Read yaml content from standard input and print pdf content to standard output
 
 ## Development
 
