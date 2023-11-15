@@ -97,8 +97,6 @@ From [``` stdf.yaml ```](stdf.yaml)
 - image ``` lujialin/yafc:pdf ```  
 	Read yaml content from standard input and print pdf content to standard output  
 
-> Currently only the ``` :dot ``` is valid. Alpine linux graphviz package doesn't work, please use new version.
-
 ## Development
 
 ### Standard Flow Matrix -- The MOST IMPORTANT data structure

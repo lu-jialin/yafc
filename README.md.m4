@@ -97,8 +97,6 @@ From __flink__(stdf.yaml)
 - image _mc_ lujialin/yafc:pdf _mc_  
 	Read yaml content from standard input and print pdf content to standard output  
 
-> Currently only the _mc_ :dot _mc_ is valid. Alpine linux graphviz package doesn't work, please use new version.
-
 ## Development
 
 ### Standard Flow Matrix -- The MOST IMPORTANT data structure
